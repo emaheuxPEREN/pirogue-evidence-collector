@@ -1,0 +1,15 @@
+#! /usr/bin/make -f
+
+export PYBUILD_NAME=pirogue_evidence_collector
+%:
+	dh $@ --with quilt,python3 --buildsystem=pybuild
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
+
+# Shipped in the tarball, modified after a build:
+override_dh_clean:
+	dh_clean
+	rm -rf pirogue_evidence_collector.egg-info/
+
+

@@ -1,0 +1,10 @@
+flask==2.2.2  # a micro web framework written in Python
+qrcode==7.4.2  # a library for generating QR codes
+rich==13.3.1  # a library for rich text and beautiful formatting in the terminal
+Werkzeug==2.2.2  # a library for building WSGI applications
+rfc3161ng==2.1.3 # a library for generating RFC3161 timestamps
+requests==2.28.1 # a library for making HTTP requests
+asn1crypto==1.5.1 # a library for parsing and creating ASN.1 data structures
+communityid
+frida
+frida-tools

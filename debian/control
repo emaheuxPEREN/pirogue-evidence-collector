@@ -1,0 +1,30 @@
+Source: pirogue-evidence-collector
+Section: misc
+Priority: optional
+Maintainer: U+039b <hello@pts-project.org>
+Build-Depends:
+ debhelper-compat (= 13),
+ quilt,
+ dh-python,
+ python3-all,
+ python3-setuptools,
+Standards-Version: 4.5.1
+Homepage: https://github.com/PiRogueToolSuite/pirogue-evidence-collector
+
+Package: pirogue-evidence-collector
+Architecture: all
+Depends: ${misc:Depends},
+ ${python3:Depends},
+ python3-requests,
+ python3-rich,
+ python3-libusb1,
+ python3-gi,
+ python3-communityid,
+ python3-flask,
+ python3-qrcode,
+ python3-rfc3161ng,
+ adb,
+ frida,
+ tshark,
+ tcpdump,
+Description: Provision PiRogue CLI tool

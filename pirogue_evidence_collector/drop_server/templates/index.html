@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let metadata = {};
+        const fileList = document.getElementById('file-list');
+        const fileInput = document.getElementById('file-upload');
+        fileInput.addEventListener('change', function (event) {
+            const files = event.target.files;
+            fileList.innerHTML = '';
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                metadata[f.name] = {
+                    'modification_timestamp': f.lastModified / 1000.0,
+                    'mimetype': f.type,
+                    'original_filename': f.name,
+                };
+                const fileName = f.name;
+                const listItem = document.createElement('li');
+                listItem.textContent = fileName;
+                fileList.appendChild(listItem);
+            }
+            document.querySelector('input[name="metadata"]').value = JSON.stringify(metadata);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Upload files to the PiRogue</h1>
+<form action='/upload' method='POST' enctype='multipart/form-data'>
+    <input type='file' id='file-upload' multiple name='file'>
+    <input type="hidden" value="" name="metadata">
+    <label for='file-upload'>Choose Files</label>
+    <ul id='file-list'></ul>
+    <button type='submit'>Upload</button>
+</form>
+<form method="GET" action="/shutdown">
+    <button type="submit" class="finish">Stop</button>
+</form>
+{% endblock %}
