@@ -8,3 +8,7 @@ asn1crypto==1.5.1 # a library for parsing and creating ASN.1 data structures
 communityid
 frida
 frida-tools
+adb-shell
+libusb1==2.0.1
+gunicorn==20.1.0 # a library for running Python WSGI applications
+netifaces==0.11.0 # a library for getting network interfaces

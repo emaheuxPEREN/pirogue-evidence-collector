@@ -5,7 +5,7 @@ from typing import Optional
 from adb_shell.adb_device import AdbDeviceUsb, AdbDevice
 from adb_shell.auth.keygen import keygen, write_public_keyfile
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
-from usb1 import USBErrorAccess, USBErrorBusy
+from usb1 import USBError
 
 
 ADB_KEY_PATH = os.path.expanduser("~/.android/adbkey")
@@ -36,7 +36,7 @@ def adb_connect() -> Optional[AdbDevice]:
         device = AdbDeviceUsb()
         device.connect(rsa_keys=[signer], auth_timeout_s=5)
         return device
-    except (USBErrorBusy, USBErrorAccess):
+    except USBError:
         log.critical("Device is busy, maybe run `adb kill-server` and try again.")
     except Exception as e:
         log.critical("No device found. Make sure it is connected and unlocked.")

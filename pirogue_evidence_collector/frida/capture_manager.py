@@ -21,15 +21,8 @@ class CaptureManager:
         self._js_script = None
         self.screen_recorder = None
         self.record_screen = record_screen
-        # ToDo - Load configuration from the configuration file
+        # ToDo - Load configuration from the administration interface
         default_iface = 'wlan0'
-        try:
-            configuration = Configuration()
-            self.current_configuration = configuration.get_currently_applied_configuration()
-            default_iface = self.current_configuration.settings.get('WLAN_IFACE')
-        except:
-            log.warning('Could not load configuration - skipping.')
-            self.current_configuration = None
         if iface:
             self.iface = iface
         else:
@@ -85,6 +78,27 @@ class CaptureManager:
         with open(f'{self.output_dir}/experiment.json', mode='w') as out:
             json.dump(data, out, indent=2)
 
+    def get_dynamic_hooks_definitions(self) -> (str, bool):
+        hook_definitions = []
+        ref = resources.files('pirogue_evidence_collector')
+        hook_definitions_dir = ref / 'frida-dynamic-hooks'
+        hook_files = [f for f in hook_definitions_dir.iterdir() if f.name.endswith('.json')]
+        if len(hook_files) == 0:
+            return hook_definitions, False
+        for hook_file in hook_files:
+            with hook_file.open('r') as file:
+                hook_definitions.extend(json.load(file))
+        return hook_definitions, True
+
+    def use_dynamic_hook_loader_injector(self, suffix: str = 'dynamic_hook_injector.js') -> bool:
+        ref = resources.files('pirogue_evidence_collector')
+        frida_scripts_dir = ref / 'frida-scripts'
+        for f in frida_scripts_dir.iterdir():
+            if f.name == suffix:
+                return True
+        return False
+
+
     def get_agent_script(self, extra_scripts_dir=None):
         if self._js_script:
             return self._js_script
@@ -123,7 +137,8 @@ class CaptureManager:
         log.info('Saving data captured by Frida')
         for filename, elt in self._output_files.items():
             if len(elt) == 0:
-                continue
+                with open(f'{self.output_dir}/{filename}', mode='w') as out:
+                    out.write('[]')
             data_type = elt[0].get('data_type')
             with open(f'{self.output_dir}/{filename}', mode='w') as out:
                 if data_type == 'json':

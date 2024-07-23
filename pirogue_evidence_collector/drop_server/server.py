@@ -2,25 +2,18 @@ import gc
 import os
 import json
 from datetime import datetime, timezone
+from threading import Thread
 
 from flask import *
 from werkzeug.serving import BaseWSGIServer
 from werkzeug.utils import secure_filename
 import logging
-from rich.logging import RichHandler
-
-
-logging.basicConfig(
-    level="NOTSET",
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True, show_path=False)]
-)
 
 
 def create_server(output_folder):
     app = Flask(__name__)
     app.logger.setLevel(logging.ERROR)
+    logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
     @app.route('/')
     def main():
@@ -60,20 +53,24 @@ def create_server(output_folder):
                     json.dump(file_metadata, f)
         return redirect(url_for('done'))
 
-    return app
+    return app, shutdown
 
 
 class DropServer:
-    def __init__(self, output_folder, port=8080):
-        self.app = create_server(output_folder)
+    def __init__(self, output_folder, host='0.0.0.0', port=8080, debug=False):
+        self.app, self.shutdown_fnc = create_server(output_folder)
+        self.host = host
         self.port = port
+        self.debug = debug
+        self.server_thread = Thread(target=self._start_server)
 
-    def start(self, debug=False):
-        logging.info('Starting server...')
-        self.app.run(debug=debug, host='0.0.0.0', port=self.port)
+    def _start_server(self):
+        self.app.run(debug=self.debug, host=self.host, port=self.port)
 
+    def start(self):
+        self.server_thread.start()
 
-if __name__ == '__main__':
-    server = DropServer('/Users/esther/Downloads')
-    server.start(debug=True)
-    logging.info('Server stopped.')
+    def stop(self):
+        self.shutdown_fnc()
+        self.server_thread.join()
+

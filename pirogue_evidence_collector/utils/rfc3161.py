@@ -1,12 +1,14 @@
+import hashlib
 import os
 import enum
-import glob
+from pathlib import Path
+
 from pyasn1.codec.der import encoder
 import requests
 
+
 try:
     import rfc3161ng
-
     force_use_openssl = False
 except ImportError:
     force_use_openssl = True
@@ -31,63 +33,84 @@ class TimestampServer(enum.Enum):
         'tsa_name': 'kakwalab.ovh_tsa_cert.pem'
     }
 
-    def download_ca(self, output_dir):
-        output_file_path = os.path.join(output_dir, self.value['ca_name'])
-        if os.path.exists(output_file_path):
+    def download_ca(self, output_dir: Path):
+        output_file_path = output_dir / self.value['ca_name']
+        if output_file_path.exists():
             return output_file_path
         response = requests.get(self.value['ca_url'], allow_redirects=True)
         if response.status_code == 200:
-            with open(output_file_path, 'wb') as f:
+            with output_file_path.open('wb') as f:
                 f.write(response.content)
         return output_file_path
 
-    def download_tsa(self, output_dir):
-        output_file_path = os.path.join(output_dir, self.value['tsa_name'])
-        if os.path.exists(output_file_path):
+    def download_tsa(self, output_dir: Path):
+
+        output_file_path = output_dir / self.value['tsa_name']
+        if output_file_path.exists():
             return output_file_path
         response = requests.get(self.value['tsa_url'], allow_redirects=True)
         if response.status_code == 200:
-            with open(output_file_path, 'wb') as f:
+            with output_file_path.open('wb') as f:
                 f.write(response.content)
         return output_file_path
 
 
-class BatchFileTimestamper:
+class FolderTimestamper:
     def __init__(self, input_folder, use_openssl=True, server: TimestampServer = TimestampServer.FREETSA):
-        self.input_folder = input_folder
+        self.input_folder = Path(input_folder)
         self.use_openssl = use_openssl or force_use_openssl
         self.server = server
-        self.readme_content = ''
 
     @staticmethod
-    def _extension_to_ignore(filename):
+    def _ignore_file(filename):
+        if filename.startswith('.'):
+            return True
         for ext in ['.tsq', '.tsr', '.metadata.json', 'crt', 'pem', 'md']:
             if filename.endswith(ext):
                 return True
         return False
 
     def timestamp_all(self):
+        hashes = []
+        # Compute the hash of the files contained in the folder
+        for file in self.input_folder.glob('*'):
+            if not file.is_file():
+                continue
+            if FolderTimestamper._ignore_file(file.name):
+                continue
+            sha512_hash = hashlib.sha512()
+            with file.open('rb') as f:
+                for chunk in iter(lambda: f.read(4096), b''):
+                    sha512_hash.update(chunk)
+            hashes.append((file, sha512_hash.hexdigest()))
+
+        # Write the hashes to a file
+        with open(os.path.join(self.input_folder, 'hashes.txt'), 'w') as hashes_file:
+            for file, hash in hashes:
+                hashes_file.write(f'{file.name} {hash}\n')
+
+        # Timestamp the hashes file
+        ft = FileTimestamper(hashes_file.name, use_openssl=self.use_openssl, server=self.server)
+        ft.timestamp()
+
+        # Write the verification instructions to a README file
         with open(os.path.join(self.input_folder, 'README.md'), 'w') as readme_file:
             server_home_url = self.server.value['home_url']
             readme_file.write('# Timestamp verification instructions\n')
-            readme_file.write(f'The following files have been timestamped by {server_home_url}.\n\n')
-            for f in glob.glob(self.input_folder + '/*', recursive=False):
-                if not os.path.isfile(f):
-                    continue
-                if BatchFileTimestamper._extension_to_ignore(f):
-                    continue
-                ft = FileTimestamper(f, use_openssl=self.use_openssl, server=self.server)
-                ft.timestamp()
-                readme_file.write(f'## For file `{f}`\n')
-                readme_file.write(f'```\n{ft.verification_commands()}\n```\n\n')
+            readme_file.write(
+                f"The file `hashes.txt` contains the hashes of the files in this folder. "
+                f"It has been timestamped by {server_home_url}.\n\n")
+            readme_file.write('## Verification commands\n')
+            readme_file.write(f'{ft.verification_commands()}\n')
 
 
 class FileTimestamper:
     def __init__(self, file_path, use_openssl=True, server: TimestampServer = TimestampServer.FREETSA):
-        self.file_path = file_path
+        self.file_path = Path(file_path)
         self.use_openssl = use_openssl or force_use_openssl
-        self.output_dir = os.path.dirname(file_path)
-        self.output_tsr = file_path + '.tsr'
+        self.output_dir = Path(os.path.dirname(file_path))
+        self.output_tsr = self.output_dir / (self.file_path.name + '.tsr')
+        self.output_tsq = self.output_dir / (self.file_path.name + '.tsq')
         self.server = server
         self.ca, self.tsa = self.get_remote_certificates()
         self.timestamper = None
@@ -101,16 +124,15 @@ class FileTimestamper:
         )
 
     def _openssl_ts_request_command(self):
-        # openssl ts -query -data file.png -no_nonce -sha512 -cert -out file.tsq
-        return f'openssl ts -query -data {self.file_path} -no_nonce -sha512 -cert -out {self.file_path}.tsq'
+        return f'openssl ts -query -data {self.file_path} -no_nonce -sha512 -cert -out {self.output_tsq}'
 
     def _send_openssl_ts_request(self):
         headers = {'Content-Type': 'application/timestamp-query'}
-        with open(f'{self.file_path}.tsq', 'rb') as f:
+        with self.output_tsq.open('rb') as f:
             data = f.read()
         response = requests.post(self.server.value['base_url'], headers=headers, data=data)
         if response.status_code == 200:
-            with open(f'{self.file_path}.tsr', 'wb') as f:
+            with self.output_tsr.open('wb') as f:
                 f.write(response.content)
         else:
             raise Exception('Unable to send the timestamp request to the server.')
@@ -126,12 +148,12 @@ class FileTimestamper:
             cmd = f'openssl ts -verify -data {self.file_path} -in {self.file_path}.tsr -queryfile {self.file_path}.tsq -CAfile {self.ca} -untrusted {self.tsa}'
         else:
             cmd = f'''
-# View the timestamp request
-openssl ts -query -in {self.file_path}.tsq -text
-# View the timestamp reply
-openssl ts -reply -in {self.file_path}.tsr -text
-# Verify the timestamp
-openssl ts -verify -in {self.file_path}.tsr -queryfile {self.file_path}.tsq -CAfile {self.ca} -untrusted {self.tsa}
+View the timestamp request  
+```openssl ts -query -in {self.output_tsq.name} -text```\n
+View the timestamp reply  
+```openssl ts -reply -in {self.output_tsr.name} -text```\n
+Verify the timestamp  
+```openssl ts -verify -in {self.output_tsr.name} -queryfile {self.output_tsq.name} -CAfile {self.ca.name} -untrusted {self.tsa.name}```\n
             '''
         return cmd
 
@@ -151,5 +173,5 @@ if __name__ == '__main__':
     # f = FileTimestamper('/Users/esther/Downloads/android-chrome-512x512.png')
     # f.timestamp()
     # print(f.verification_commands())
-    bt = BatchFileTimestamper('/Users/esther/Downloads')
+    bt = FolderTimestamper('/Users/esther/Downloads')
     bt.timestamp_all()

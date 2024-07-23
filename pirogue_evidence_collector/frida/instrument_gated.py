@@ -80,6 +80,9 @@ class FridaApplication:
                     pass
                 api.log_ad_ids()
                 api.no_root()
+                hook_definitions, success = self.capture_manager.get_dynamic_hooks_definitions()
+                if success:
+                    api.inject_dynamic_hooks(spawn.pid, spawn.identifier, hook_definitions)
                 FridaApplication.sessions.append(session)
                 FridaApplication.scripts.append(script)
             else:

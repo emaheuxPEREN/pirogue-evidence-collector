@@ -38,17 +38,13 @@ def main():
         choices=['install-frida', 'start-frida', 'stop-frida'])
 
     args = arg_parser.parse_args()
-    if not args.func:
-        arg_parser.print_help()
-        return
 
-    if args.func == 'android':
-        android_route = {
-            'install-frida': __install_frida,
-            'start-frida': __start_frida,
-            'stop-frida': __stop_frida,
-        }
-        android_route.get(args.action, __install_frida)()
+    android_route = {
+        'install-frida': __install_frida,
+        'start-frida': __start_frida,
+        'stop-frida': __stop_frida,
+    }
+    android_route.get(args.action, __install_frida)()
 
 
 if __name__ == '__main__':

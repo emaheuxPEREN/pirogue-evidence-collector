@@ -1,6 +1,5 @@
 import hashlib
 import os
-import glob
 import mimetypes
 import json
 from datetime import datetime, timezone
@@ -8,9 +7,9 @@ from pathlib import Path
 
 
 class MetadataExporter:
-    def __init__(self, input_file: str):
-        self.input_file = input_file
-        self.metadata = {}
+    def __init__(self, input_file: Path):
+        self.input_file: Path = input_file
+        self.metadata: dict = {}
         self.tz = datetime.now(timezone.utc).astimezone().tzinfo
 
     def resolve_timestamp(self, timestamp: float):
@@ -24,8 +23,8 @@ class MetadataExporter:
         sha1_hash = hashlib.sha1()
         sha256_hash = hashlib.sha256()
         sha512_hash = hashlib.sha512()
-        with open(self.input_file, 'rb') as f:
-            for chunk in iter(lambda: f.read(4096), b''):
+        with self.input_file.open('rb') as _f:
+            for chunk in iter(lambda: _f.read(4096), b''):
                 md5_hash.update(chunk)
                 sha1_hash.update(chunk)
                 sha256_hash.update(chunk)
@@ -39,7 +38,7 @@ class MetadataExporter:
 
     def extract(self):
         self.metadata = {
-            'filename': Path(self.input_file).name,
+            'filename': self.input_file.name,
             'size': os.path.getsize(self.input_file),
             'extraction_timestamp': datetime.now(self.tz).timestamp(),
             'extraction_date': datetime.now(self.tz).isoformat(),
@@ -48,38 +47,38 @@ class MetadataExporter:
         self.metadata.update(self.get_file_checksums())
 
     def export(self):
-        if os.path.exists(self.input_file + '.metadata.json'):
-            with open(self.input_file + '.metadata.json') as f:
-                existing_metadata = json.load(f)
+        if os.path.exists(self.input_file.name + '.metadata.json'):
+            with open(self.input_file.name + '.metadata.json') as _f:
+                existing_metadata = json.load(_f)
             self.metadata.update(existing_metadata)
-        with open(self.input_file + '.metadata.json', 'w') as f:
-            json.dump(self.metadata, f)
+        with open(self.input_file.name + '.metadata.json', 'w') as _f:
+            json.dump(self.metadata, _f)
 
 
 class BatchExporter:
-    def __init__(self, input_folder: str, extra_metadata: dict = None):
-        self.input_folder = input_folder
-        self.extra_metadata = extra_metadata
+    def __init__(self, input_folder: Path, extra_metadata: dict = None):
+        self.input_folder: Path = input_folder
+        self.extra_metadata: dict = extra_metadata
 
     def export(self):
-        for f in glob.glob(self.input_folder + '/*', recursive=False):
-            if not os.path.isfile(f):
+        for input_file in self.input_folder.glob('*'):
+            if not input_file.is_file():
                 continue
-            if f.endswith('.metadata.json'):
+            if input_file.name.endswith('.metadata.json'):
                 continue
-            me = MetadataExporter(f)
-            me.extract()
+            exporter = MetadataExporter(input_file)
+            exporter.extract()
             if self.extra_metadata:
-                me.add_extra_metadata(self.extra_metadata)
-            me.export()
+                exporter.add_extra_metadata(self.extra_metadata)
+            exporter.export()
 
 
 if __name__ == '__main__':
-    import glob
-    for f in glob.glob('/pirogue_utils/drop_server/*'):
-        if not os.path.isfile(f):
+    folder_path = Path('/pirogue_utils/drop_server')
+    for f in folder_path.glob('*'):
+        if not f.is_file():
             continue
-        if f.endswith('.metadata.json'):
+        if f.name.endswith('.metadata.json'):
             continue
         me = MetadataExporter(f)
         me.extract()
@@ -88,4 +87,3 @@ if __name__ == '__main__':
     # me = MetadataExporter('/Users/esther/Code/pts/pirogue-file-drop/pirogue_file_drop/IMG_1921.png')
     # me.extract()
     # print(me.metadata)
-
