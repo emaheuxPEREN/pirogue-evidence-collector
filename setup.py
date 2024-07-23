@@ -24,10 +24,10 @@ setup(
             "pirogue-intercept-single = pirogue_evidence_collector.entrypoints.intercept_single:start_interception",
             "pirogue-intercept-gated = pirogue_evidence_collector.entrypoints.intercept_gated:start_interception",
             "pirogue-view-tls = pirogue_evidence_collector.entrypoints.view_tls:view_decrypted_traffic",
-            "pirogue-android = pirogue_evidence_collector.entrypoints.pirogue-android:main",
-            "pirogue-file-drop = pirogue_evidence_collector.entrypoints.pirogue-file-drop:main",
-            "pirogue-extract-metadata = pirogue_evidence_collector.entrypoints.pirogue-extract-metadata:main",
-            "pirogue-timestamp = pirogue_evidence_collector.entrypoints.pirogue-timestamp:main",
+            "pirogue-android = pirogue_evidence_collector.entrypoints.pirogue_android:main",
+            "pirogue-file-drop = pirogue_evidence_collector.entrypoints.pirogue_file_drop:main",
+            "pirogue-extract-metadata = pirogue_evidence_collector.entrypoints.pirogue_extract_metadata:main",
+            "pirogue-timestamp = pirogue_evidence_collector.entrypoints.pirogue_timestamp:main"
         ],
     },
     classifiers=[
