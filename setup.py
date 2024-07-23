@@ -14,7 +14,7 @@ setup(
     packages=find_packages(),
     package_data={"pirogue_evidence_collector": [
         "frida-scripts/*.js",
-        "frida-dynamic-hooks/*.js",
+        "frida-dynamic-hooks/*.json",
         "drop_server/templates/*.html",
     ]},
     zip_safe=True,

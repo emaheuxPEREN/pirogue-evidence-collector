@@ -2,7 +2,6 @@
 
 function _inject_hooks(pid, process, hook_list) {
     hook_list.forEach(item => {
-        console.log(item);
         item.methods.forEach(method => {
             try {
                 const name_split = method.split('/');
@@ -12,18 +11,11 @@ function _inject_hooks(pid, process, hook_list) {
                     try {
                         _inject_hook(pid, process, item.taxonomy_id, item.description, class_name, method_name);
                     } catch (error) {
-                        console.log({
-                            message_type: "java_hook_error",
-                            class: class_name,
-                            method: method_name,
-                            error_message: error,
-                        });
+                        console.log('Hook injection error', class_name, method, error);
                     }
                 }
             } catch (error) {
-                console.log({
-                    message_type: "hook_error", name: method, error_message: error,
-                });
+                console.log('Hook injection error', method, error);
             }
         });
     });
@@ -67,13 +59,7 @@ function _inject_hook(pid, process, taxonomy_id, description, class_name, method
                 });
                 return returned_value;
             } catch (error) {
-                console.log({
-                    message_type: "java_hook_data_error",
-                    timestamp: timestamp,
-                    class: class_name,
-                    method: method_name,
-                    error_message: error
-                });
+                console.log('Hook error', class_name, method_name, error);
             }
         };
     });
