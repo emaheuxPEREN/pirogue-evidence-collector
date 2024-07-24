@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Pôle d'Expertise de la Régulation Numérique - PEReN <contact@peren.gouv.fr>
+// SPDX-License-Identifier: MIT
+
 "use strict";
 
 function _inject_hooks(pid, process, hook_list) {
