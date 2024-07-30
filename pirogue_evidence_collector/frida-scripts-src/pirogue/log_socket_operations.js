@@ -1,5 +1,3 @@
-'use strict';
-
 function _socket_trace(pid, process) {
 
     function _send_msg(msg) {
@@ -62,12 +60,7 @@ function _socket_trace(pid, process) {
         })
     })
 }
-  
-try {
-    r2frida.pluginRegister('socket_trace', _socket_trace);
-} catch (e) {}
 
-try {
-    rpc.exports['socketTrace'] = _socket_trace
-} catch (e) {}
-
+export function socket_trace(pid, process) {
+    _socket_trace(pid, process);
+}

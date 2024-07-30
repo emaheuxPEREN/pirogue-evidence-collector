@@ -3,4 +3,5 @@
 __pycache__
 *.pyc
 .idea
+node_modules
 pirogue_evidence_collector/frida-dynamic-hooks/*.json

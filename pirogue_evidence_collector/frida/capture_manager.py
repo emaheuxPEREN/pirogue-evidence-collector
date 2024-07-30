@@ -90,15 +90,6 @@ class CaptureManager:
                 hook_definitions.extend(json.load(file))
         return hook_definitions, True
 
-    def use_dynamic_hook_loader_injector(self, suffix: str = 'dynamic_hook_injector.js') -> bool:
-        ref = resources.files('pirogue_evidence_collector')
-        frida_scripts_dir = ref / 'frida-scripts'
-        for f in frida_scripts_dir.iterdir():
-            if f.name == suffix:
-                return True
-        return False
-
-
     def get_agent_script(self, extra_scripts_dir=None):
         if self._js_script:
             return self._js_script

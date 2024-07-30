@@ -4,7 +4,7 @@ import pathlib
 
 from rich.logging import RichHandler
 
-from pirogue_evidence_collector.utils.rfc3161 import FolderTimestamper
+from pirogue_evidence_collector.utils.rfc3161 import FolderTimestamper, FileTimestamper
 
 LOG_FORMAT = '%(message)s'
 logging.basicConfig(level='INFO', format=LOG_FORMAT, handlers=[
@@ -23,10 +23,25 @@ def main():
         required=True,
         type=pathlib.Path
     )
+    arg_parser.add_argument(
+        '-c',
+        '--combine',
+        help='Combine all the files in the folder into a single file of hashes and time stamp it instead of time '
+             'stamping each file individually',
+        default=False,
+        required=False,
+        type=bool
+    )
 
     args = arg_parser.parse_args()
-    folder_path = args.path
+    target_path = args.path
 
-    logging.info(f'Timestamping files in {folder_path}')
-    bt = FolderTimestamper(folder_path)
-    bt.timestamp_all()
+    if target_path.is_dir():
+        logging.info(f'Timestamping files in {target_path}')
+        bt = FolderTimestamper(target_path)
+        bt.timestamp_all()
+    elif target_path.is_file():
+        logging.info(f'Timestamping file {target_path}')
+        ft = FileTimestamper(target_path)
+        ft.timestamp()
+

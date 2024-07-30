@@ -19,7 +19,7 @@ It defines the following commands:
 
 * `pirogue-android` to interact with an Android device and run commands on it.
 * `pirogue-file-drop` to expose a web server allowing the user to upload files from their device to the PiRogue.
-* `pirogue-extract-metadata` to extract metadata of a file and save it separately in `[original file name].metadata.json`.
+* `pirogue-save-metadata` to extract metadata of a file and save it separately in `[original file name].metadata.json`.
 * `pirogue-timestamp` to time stamp files using a 3rd-party RFC3161 service.
 * `pirogue-intercept-[gated|single]` to instrument an Android application to analyze its network traffic.
 
@@ -30,6 +30,6 @@ the file `debian/copyright`.
 * All the code in this repository is licensed under the GPLv3 license.
   * Copyright: 2024   U+039b <hello@pts-project.org>  
   * Copyright: 2024   Defensive Lab Agency <contact@defensive-lab.agency>
-* The file `frida-scripts/dynamic_hook_injector.js` is licensed under the MIT license.
+* The file `frida-scripts-src/dynamic_hook_injector.js` is licensed under the MIT license.
   * Copyright: 2024   Pôle d'Expertise de la Régulation Numérique - PEReN <contact@peren.gouv.fr>
 

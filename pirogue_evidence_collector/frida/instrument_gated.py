@@ -12,9 +12,25 @@ def on_spawned(spawn):
     FridaApplication.event.set()
 
 
-def on_message(capture_manager, spawn, message):
+def on_message(capture_manager, spawn, message, script):
+    # Pass option to friTap hooks
+    if message['payload'] == 'experimental':
+        script.post({'type': 'experimental', 'payload': False})
+        return
+    if message['payload'] == 'defaultFD':
+        script.post({'type': 'defaultFD', 'payload': False})
+        return
+    if message['payload'] == 'anti':
+        script.post({'type': 'antiroot', 'payload': False})
+        return
+
+    # Received data from the Frida hooks
     if message['type'] == 'send':
         data = message.get('payload')
+        # Specific handling for friTap data
+        if data and data.get('contentType', '') == 'keylog':
+            data['dump'] = 'sslkeylog.txt'
+            data['data'] = data.get('keylog')
         if data:
             capture_manager.capture_data(data)
 
@@ -69,7 +85,7 @@ class FridaApplication:
                 print('Instrumenting:', spawn)
                 session = self._device.attach(spawn.pid)
                 script = session.create_script(self.capture_manager.get_agent_script())
-                script.on('message', lambda message, data: on_message(self.capture_manager, spawn, message))
+                script.on('message', lambda message, data: on_message(self.capture_manager, spawn, message, script))
                 script.load()
                 api = script.exports
                 api.socket_trace(spawn.pid, spawn.identifier)

@@ -40,14 +40,13 @@ class FridaApplication(ConsoleApplication):
         self._output_files = {}
         self._update_status('Attached')
 
+        self._script = self._session.create_script(self.capture_manager.get_agent_script())
+
         def on_message(message, data):
             self._reactor.schedule(lambda: self._on_message(message, data))
 
-        self._session_cache = set()
-
-        self._script = self._session.create_script(self.capture_manager.get_agent_script())
         self._script.on('message', on_message)
-
+        self._session_cache = set()
         self._update_status('Loading script...')
         self._script.load()
         self._update_status('Loaded script')
@@ -60,6 +59,9 @@ class FridaApplication(ConsoleApplication):
             pass
         api.log_ad_ids()
         api.no_root()
+        hook_definitions, success = self.capture_manager.get_dynamic_hooks_definitions()
+        if success:
+            api.inject_dynamic_hooks('unknown', 'unknown', hook_definitions)
         self._update_status('Loaded script')
         self._resume()
         time.sleep(1)
@@ -71,6 +73,17 @@ class FridaApplication(ConsoleApplication):
         self.capture_manager.stop_capture()
 
     def _on_message(self, message, data):
+        if message['payload'] == 'experimental':
+            self._script.post({'type': 'experimental', 'payload': False})
+            return
+
+        if message['payload'] == 'defaultFD':
+            self._script.post({'type': 'defaultFD', 'payload': False})
+            return
+
+        if message['payload'] == 'anti':
+            self._script.post({'type': 'antiroot', 'payload': False})
+            return
         if message['type'] == 'send':
             if message.get('payload'):
                 self.capture_manager.capture_data(message.get('payload'))

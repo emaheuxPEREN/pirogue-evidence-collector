@@ -8,7 +8,7 @@ Copyright: 2024   U+039b <hello@pts-project.org>
                   Defensive Lab Agency <contact@defensive-lab.agency>
 License: GPL-3.0+
 
-Files: pirogue_evidence_collector/frida-scripts/dynamic_hook_injector.js
+Files: pirogue_evidence_collector/frida-scripts-src/dynamic_hook_injector.js
 Copyright: 2024   2024 Pôle d'Expertise de la Régulation Numérique - PEReN <contact@peren.gouv.fr>
 License: MIT
 

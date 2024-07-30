@@ -11,9 +11,7 @@
  * License: MIT
  */
 
-'use strict';
-
-function _log_ssl_keys(SSL_CTX_new, SSL_CTX_set_keylog_callback) {
+export function _log_ssl_keys(SSL_CTX_new, SSL_CTX_set_keylog_callback) {
     if (!SSL_CTX_new || !SSL_CTX_set_keylog_callback) {
         console.warn('_log_ssl_keys called with NULL pointers, ignoring.')
         return -1;
@@ -97,12 +95,4 @@ function log_ssl_keys() {
         }
     }
 }
-
-try {
-    r2frida.pluginRegister('log_ssl_keys', log_ssl_keys);
-} catch (e) {}
-
-try {
-    rpc.exports['logSslKeys'] = log_ssl_keys;
-} catch (e) {}
 

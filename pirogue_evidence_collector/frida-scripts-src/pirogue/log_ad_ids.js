@@ -1,6 +1,3 @@
-'use strict';
-
-
 function _log_ad_ids() {
     try {
         const client = Java.use('com.google.android.gms.ads.identifier.AdvertisingIdClient');
@@ -21,19 +18,8 @@ function _log_ad_ids() {
     }
 }
 
-function log_ad_ids() {
+export function log_ad_ids() {
     Java.perform(() => {
         _log_ad_ids();
     });
 }
-
-try {
-    r2frida.pluginRegister('log_ad_ids', log_ad_ids);
-} catch (e) {
-}
-
-try {
-    rpc.exports['logAdIds'] = log_ad_ids;
-} catch (e) {
-}
-

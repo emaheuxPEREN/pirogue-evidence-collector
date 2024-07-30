@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2024 Pôle d'Expertise de la Régulation Numérique - PEReN <contact@peren.gouv.fr>
 // SPDX-License-Identifier: MIT
 
-"use strict";
-
 function _inject_hooks(pid, process, hook_list) {
     hook_list.forEach(item => {
         item.methods.forEach(method => {
@@ -68,18 +66,8 @@ function _inject_hook(pid, process, taxonomy_id, description, class_name, method
     });
 }
 
-function inject_hooks(pid, process, hook_list) {
+export function inject_hooks(pid, process, hook_list) {
     Java.perform(() => {
         _inject_hooks(pid, process, hook_list);
     });
-}
-
-try {
-    r2frida.pluginRegister('inject_dynamic_hooks', inject_hooks);
-} catch (e) {
-}
-
-try {
-    rpc.exports['injectDynamicHooks'] = inject_hooks;
-} catch (e) {
 }

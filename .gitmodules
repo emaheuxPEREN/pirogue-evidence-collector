@@ -1,0 +1,3 @@
+[submodule "pirogue_evidence_collector/frida-scripts-src/friTap"]
+	path = pirogue_evidence_collector/frida-scripts-src/friTap
+	url = https://github.com/fkie-cad/friTap.git

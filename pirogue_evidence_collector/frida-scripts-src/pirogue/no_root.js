@@ -5,7 +5,7 @@ Original author: Daniele Linguaglossa
         		Added controls to exclude Magisk Manager
 */
 
-function no_root(){
+export function no_root(){
     Java.perform(function() {
         var RootPackages = ["com.noshufou.android.su", "com.noshufou.android.su.elite", "eu.chainfire.supersu",
             "com.koushikdutta.superuser", "com.thirdparty.superuser", "com.yellowes.su", "com.koushikdutta.rommanager",
@@ -360,11 +360,3 @@ function no_root(){
     
     });
 }
-
-try {
-    r2frida.pluginRegister('no_root', no_root);
-} catch (e) {}
-
-try {
-    rpc.exports['noRoot'] = no_root
-} catch (e) {}

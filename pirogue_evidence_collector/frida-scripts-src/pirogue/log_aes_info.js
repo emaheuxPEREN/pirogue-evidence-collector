@@ -1,6 +1,4 @@
-'use strict';
-
-function log_aes_info(pid, process) {
+export function log_aes_info(pid, process) {
 
     var use_single_byte = false;
     var complete_bytes = new Array();
@@ -207,12 +205,4 @@ function log_aes_info(pid, process) {
         }
     }
 }
-
-try {
-    r2frida.pluginRegister('log_aes_info', log_aes_info);
-} catch (e) {}
-
-try {
-    rpc.exports['logAesInfo'] = log_aes_info
-} catch (e) {}
 
