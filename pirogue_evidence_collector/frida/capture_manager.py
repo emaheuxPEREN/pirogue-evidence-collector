@@ -114,6 +114,8 @@ class CaptureManager:
 
     def capture_data(self, data):
         output_file = data.get('dump')
+        if output_file is None:
+            return
         if output_file not in self._output_files:
             self._output_files[output_file] = []
         self._output_files[output_file].append(data)
