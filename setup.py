@@ -1,8 +1,5 @@
 from setuptools import find_packages, setup
 
-# ToDo: needs a patch to ignore the requirements definition during the build process of the Debian package
-requirements = [i.strip() for i in open("requirements.txt").readlines()]
-
 setup(
     name="pirogue-evidence-collector",
     version="1.0.0",
@@ -10,7 +7,6 @@ setup(
     author_email="hello@pts-project.org",
     description="A set of tools to collect evidence from mobile devices",
     url="https://github.com/PiRogueToolSuite/pirogue-evidence-collector",
-    install_requires=requirements,
     packages=find_packages(),
     package_data={"pirogue_evidence_collector": [
         "frida-scripts/*.js",
