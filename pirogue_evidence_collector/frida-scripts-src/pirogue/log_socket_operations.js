@@ -2,7 +2,7 @@ function _socket_trace(pid, process) {
 
     function _send_msg(msg) {
         const _msg = {
-            'type': 'socket_trace_log',
+            'type': 'socket_traces',
             'dump': 'socket_trace.json',
             'pid': pid,
             'process': process,

@@ -22,8 +22,6 @@ def finalize(app):
     print('Saving captured data')
     if app:
         app.save_data()
-        # app.tcp_dump.stop_capture()
-        # app.device.stop_frida_server()
         log.info('You can analyze the results with the following commands in the output folder:')
         log.info('  * Generate a PCAPNG file: editcap --inject-secrets tls,sslkeylog.txt traffic.pcap decrypted.pcapng')
         log.info('  * Export decrypted traffic to JSON: tshark -2 -T ek --enable-protocol communityid -Ndmn -r decrypted.pcapng > traffic.json')

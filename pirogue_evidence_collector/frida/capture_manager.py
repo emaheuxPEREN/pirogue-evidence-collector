@@ -16,6 +16,7 @@ class CaptureManager:
     def __init__(self, output_dir, iface=None, record_screen=True):
         self.output_dir = output_dir
         self._output_files = {}
+        self.captured_data = {}
         self.tcp_dump = None
         self.device = None
         self._js_script = None
@@ -48,7 +49,7 @@ class CaptureManager:
         self.device.start_frida_server()
         self.tcp_dump.start_capture()
         net_capture_ts = time.time()*1000
-        data = {
+        self.captured_data = {
             'network': {
                 'start_capture_time': net_capture_ts,
                 'file': 'traffic.pcap'
@@ -70,13 +71,10 @@ class CaptureManager:
         if self.record_screen:
             self.screen_recorder.start_recording()
             screen_capture_ts = time.time()*1000
-            data['screen'] = {
+            self.captured_data['screen'] = {
                 'start_capture_time': screen_capture_ts,
                 'file': 'screen.mp4'
             }
-
-        with open(f'{self.output_dir}/experiment.json', mode='w') as out:
-            json.dump(data, out, indent=2)
 
     def get_dynamic_hooks_definitions(self) -> (str, bool):
         hook_definitions = []
@@ -118,6 +116,8 @@ class CaptureManager:
             return
         if output_file not in self._output_files:
             self._output_files[output_file] = []
+        if output_type := data.get('type'):
+            self.captured_data[output_type] = {'file': output_file}
         self._output_files[output_file].append(data)
 
     def save_device_properties(self):
@@ -140,6 +140,9 @@ class CaptureManager:
                     for record in elt:
                         data = record.get('data')
                         out.write(f'{data}\n')
+        # Save the details of the experiment
+        with open(f'{self.output_dir}/experiment.json', mode='w') as out:
+            json.dump(self.captured_data, out, indent=2)
 
     def stop_capture(self):
         self.save_data_files()

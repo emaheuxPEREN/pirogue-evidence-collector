@@ -34,7 +34,7 @@ export function log_aes_info(pid, process) {
     secretKeySpecDef_init_1.implementation = function(arr, alg) {
         var key = b2s(arr);
         const msg = {
-            'type': 'aes_info_log',
+            'type': 'crypto_traces',
             'dump': 'aes_info.json',
             'data_type': 'json',
             'pid': pid,
@@ -56,7 +56,7 @@ export function log_aes_info(pid, process) {
     secretKeySpecDef_init_2.implementation = function(arr, off, len, alg) {
         var key = b2s(arr);
         const msg = {
-            'type': 'aes_info_log',
+            'type': 'crypto_traces',
             'dump': 'aes_info.json',
             'data_type': 'json',
             'pid': pid,
@@ -138,7 +138,7 @@ export function log_aes_info(pid, process) {
 
     function info(iv, alg, plain, encoded) {
         const msg = {
-            'type': 'aes_info_log',
+            'type': 'crypto_traces',
             'dump': 'aes_info.json',
             'data_type': 'json',
             'pid': pid,

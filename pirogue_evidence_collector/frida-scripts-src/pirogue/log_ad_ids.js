@@ -5,7 +5,7 @@ function _log_ad_ids() {
             const i = this.getAdvertisingIdInfo(x);
             const id = i.getId();
             const msg = {
-                'type': 'ssl_key_log',
+                'type': 'advertising_id_log',
                 'dump': 'ad_ids.txt',
                 'data_type': 'plain',
                 'data': id

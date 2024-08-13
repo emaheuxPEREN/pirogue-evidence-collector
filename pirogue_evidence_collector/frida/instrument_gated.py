@@ -13,7 +13,7 @@ def on_spawned(spawn):
 
 
 def on_message(capture_manager, spawn, message, script):
-    # Pass option to friTap hooks
+    # Pass options to friTap hooks
     if message['payload'] == 'experimental':
         script.post({'type': 'experimental', 'payload': False})
         return
@@ -30,6 +30,7 @@ def on_message(capture_manager, spawn, message, script):
         # Specific handling for friTap data
         if data and data.get('contentType', '') == 'keylog':
             data['dump'] = 'sslkeylog.txt'
+            data['type'] = 'sslkeylog'
             data['data'] = data.get('keylog')
         if data:
             capture_manager.capture_data(data)
@@ -105,8 +106,3 @@ class FridaApplication:
                 print('Not instrumenting:', spawn)
             self._device.resume(spawn.pid)
             print('Processed:', spawn)
-
-
-if __name__ == '__main__':
-    app = FridaApplication()
-    app.run()

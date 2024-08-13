@@ -21,7 +21,7 @@ export function _log_ssl_keys(SSL_CTX_new, SSL_CTX_set_keylog_callback) {
         const s_line = new NativePointer(line).readCString();
         console.log(s_line);
         const msg = {
-            'type': 'ssl_key_log',
+            'type': 'sslkeylog',
             'dump': 'sslkeylog.txt',
             'data_type': 'plain',
             'data': s_line
