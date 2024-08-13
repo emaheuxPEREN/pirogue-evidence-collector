@@ -90,7 +90,6 @@ class FridaApplication:
                 script.load()
                 api = script.exports
                 api.socket_trace(spawn.pid, spawn.identifier)
-                api.log_ssl_keys()
                 try:
                     api.log_aes_info(spawn.pid, spawn.identifier)
                 except Exception:
