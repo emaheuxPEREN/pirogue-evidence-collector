@@ -4,6 +4,4 @@ from pirogue_evidence_collector.file_handler.metadata import BatchExporter
 
 
 def main():
-    be = BatchExporter(Path('/pirogue_utils/drop_server'))
-    be.export()
-
+    pass  # ToDo - Implement the main function

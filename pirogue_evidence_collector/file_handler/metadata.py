@@ -71,19 +71,3 @@ class BatchExporter:
             if self.extra_metadata:
                 exporter.add_extra_metadata(self.extra_metadata)
             exporter.export()
-
-
-if __name__ == '__main__':
-    folder_path = Path('/pirogue_utils/drop_server')
-    for f in folder_path.glob('*'):
-        if not f.is_file():
-            continue
-        if f.name.endswith('.metadata.json'):
-            continue
-        me = MetadataExporter(f)
-        me.extract()
-        me.export()
-        print(me.metadata)
-    # me = MetadataExporter('/Users/esther/Code/pts/pirogue-file-drop/pirogue_file_drop/IMG_1921.png')
-    # me.extract()
-    # print(me.metadata)
