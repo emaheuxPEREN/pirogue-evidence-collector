@@ -5,7 +5,7 @@
     "private": true,
     "main": "agent/ssl_log.ts",
     "scripts": {
-        "build": "frida-compile -c pirogue_evidence_collector/frida-scripts-src/agent.ts -o pirogue_evidence_collector/frida-scripts/_ssl_log.js"
+        "build": "frida-compile -c pirogue_evidence_collector/frida-scripts-src/agent.ts -o pirogue_evidence_collector/frida-scripts/agent.js"
     },
     "keywords": [
         "frida",
