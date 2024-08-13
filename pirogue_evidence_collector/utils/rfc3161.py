@@ -44,7 +44,6 @@ class TimestampServer(enum.Enum):
         return output_file_path
 
     def download_tsa(self, output_dir: Path):
-
         output_file_path = output_dir / self.value['tsa_name']
         if output_file_path.exists():
             return output_file_path
@@ -70,13 +69,13 @@ class FolderTimestamper:
                 return True
         return False
 
-    def timestamp_all(self):
+    def _combine_timestamp(self):
         hashes = []
         # Compute the hash of the files contained in the folder
         for file in self.input_folder.glob('*'):
             if not file.is_file():
                 continue
-            if FolderTimestamper._ignore_file(file.name):
+            if self._ignore_file(file.name):
                 continue
             sha512_hash = hashlib.sha512()
             with file.open('rb') as f:
@@ -102,6 +101,18 @@ class FolderTimestamper:
                 f"It has been timestamped by {server_home_url}.\n\n")
             readme_file.write('## Verification commands\n')
             readme_file.write(f'{ft.verification_commands()}\n')
+
+    def timestamp_all(self, combine=False):
+        if combine:
+            self._combine_timestamp()
+        else:
+            for file in self.input_folder.glob('*'):
+                if not file.is_file():
+                    continue
+                if self._ignore_file(file.name):
+                    continue
+                ft = FileTimestamper(file, use_openssl=self.use_openssl, server=self.server)
+                ft.timestamp()
 
 
 class FileTimestamper:
@@ -167,11 +178,3 @@ Verify the timestamp
                 tsr = self.timestamper(f.read(), return_tsr=True)
             with open(f'{self.file_path}.tsr', 'wb') as f:
                 f.write(encoder.encode(tsr))
-
-
-if __name__ == '__main__':
-    # f = FileTimestamper('/Users/esther/Downloads/android-chrome-512x512.png')
-    # f.timestamp()
-    # print(f.verification_commands())
-    bt = FolderTimestamper('/Users/esther/Downloads')
-    bt.timestamp_all()

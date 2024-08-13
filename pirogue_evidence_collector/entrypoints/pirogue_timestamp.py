@@ -37,11 +37,11 @@ def main():
     target_path = args.path
 
     if target_path.is_dir():
-        logging.info(f'Timestamping files in {target_path}')
+        logging.info(f'Timestamping the files contained in {target_path}')
         bt = FolderTimestamper(target_path)
-        bt.timestamp_all()
+        bt.timestamp_all(args.combine)
     elif target_path.is_file():
-        logging.info(f'Timestamping file {target_path}')
+        logging.info(f'Timestamping the file {target_path}')
         ft = FileTimestamper(target_path)
         ft.timestamp()
 
