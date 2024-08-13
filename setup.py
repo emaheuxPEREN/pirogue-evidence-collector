@@ -26,7 +26,7 @@ setup(
             "pirogue-view-tls = pirogue_evidence_collector.entrypoints.view_tls:view_decrypted_traffic",
             "pirogue-android = pirogue_evidence_collector.entrypoints.pirogue_android:main",
             "pirogue-file-drop = pirogue_evidence_collector.entrypoints.pirogue_file_drop:main",
-            "pirogue-extract-metadata = pirogue_evidence_collector.entrypoints.pirogue_extract_metadata:main",
+            "pirogue-save-metadata = pirogue_evidence_collector.entrypoints.pirogue_save_metadata:main",
             "pirogue-timestamp = pirogue_evidence_collector.entrypoints.pirogue_timestamp:main"
         ],
     },
