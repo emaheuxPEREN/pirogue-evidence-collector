@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 function _inject_hooks(pid, process, hook_list) {
+    console.log('Inject dynamic hooks')
     hook_list.forEach(item => {
         item.methods.forEach(method => {
             try {
@@ -11,13 +12,9 @@ function _inject_hooks(pid, process, hook_list) {
                 if (method.startsWith('L')) {
                     try {
                         _inject_hook(pid, process, item.taxonomy_id, item.description, class_name, method_name);
-                    } catch (error) {
-                        console.log('Hook injection error', class_name, method, error);
-                    }
+                    } catch (error) {}
                 }
-            } catch (error) {
-                console.log('Hook injection error', method, error);
-            }
+            } catch (error) {}
         });
     });
 }
@@ -59,9 +56,7 @@ function _inject_hook(pid, process, taxonomy_id, description, class_name, method
                     stacktrace: stacktrace
                 });
                 return returned_value;
-            } catch (error) {
-                console.log('Hook error', class_name, method_name, error);
-            }
+            } catch (error) {}
         };
     });
 }

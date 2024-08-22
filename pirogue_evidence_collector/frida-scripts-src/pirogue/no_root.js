@@ -15,69 +15,28 @@ export function no_root(){
             "com.amphoras.hidemyrootadfree", "com.formyhm.hiderootPremium", "com.formyhm.hideroot", "me.phh.superuser",
             "eu.chainfire.supersu.pro", "com.kingouser.com", "com.topjohnwu.magisk"
         ];
-    
         var RootBinaries = ["su", "busybox", "supersu", "Superuser.apk", "KingoUser.apk", "SuperSu.apk", "magisk"];
-    
         var RootProperties = {
             "ro.build.selinux": "1",
             "ro.debuggable": "0",
             "service.adb.root": "0",
             "ro.secure": "1"
         };
-    
         var RootPropertiesKeys = [];
     
         for (var k in RootProperties) RootPropertiesKeys.push(k);
-    
         var PackageManager = Java.use("android.app.ApplicationPackageManager");
-    
         var Runtime = Java.use('java.lang.Runtime');
-    
         var NativeFile = Java.use('java.io.File');
-    
         var String = Java.use('java.lang.String');
-    
         var SystemProperties = Java.use('android.os.SystemProperties');
-    
         var BufferedReader = Java.use('java.io.BufferedReader');
-    
         var ProcessBuilder = Java.use('java.lang.ProcessBuilder');
-    
         var StringBuffer = Java.use('java.lang.StringBuffer');
-    
         var loaded_classes = Java.enumerateLoadedClassesSync();
-    
-        console.log("Loaded " + loaded_classes.length + " classes!");
-    
         var useKeyInfo = false;
-    
         var useProcessManager = false;
-    
-        console.log("loaded: " + loaded_classes.indexOf('java.lang.ProcessManager'));
-    
-        if (loaded_classes.indexOf('java.lang.ProcessManager') != -1) {
-            try {
-                //useProcessManager = true;
-                //var ProcessManager = Java.use('java.lang.ProcessManager');
-            } catch (err) {
-                console.log("ProcessManager Hook failed: " + err);
-            }
-        } else {
-            console.log("ProcessManager hook not loaded");
-        }
-    
         var KeyInfo = null;
-    
-        if (loaded_classes.indexOf('android.security.keystore.KeyInfo') != -1) {
-            try {
-                //useKeyInfo = true;
-                //var KeyInfo = Java.use('android.security.keystore.KeyInfo');
-            } catch (err) {
-                console.log("KeyInfo Hook failed: " + err);
-            }
-        } else {
-            console.log("KeyInfo hook not loaded");
-        }
     
         PackageManager.getPackageInfo.overload('java.lang.String', 'int').implementation = function(pname, flags) {
             var shouldFakePackage = (RootPackages.indexOf(pname) > -1);
@@ -98,7 +57,6 @@ export function no_root(){
                 return this.exists.call(this);
             }
         };
-    
         var exec = Runtime.exec.overload('[Ljava.lang.String;');
         var exec1 = Runtime.exec.overload('java.lang.String');
         var exec2 = Runtime.exec.overload('java.lang.String', '[Ljava.lang.String;');
@@ -210,7 +168,6 @@ export function no_root(){
             }
             return this.contains.call(this, name);
         };
-    
         var get = SystemProperties.get.overload('java.lang.String');
     
         get.implementation = function(name) {
@@ -286,7 +243,6 @@ export function no_root(){
             }
             return text;
         };
-    
         var executeCommand = ProcessBuilder.command.overload('java.util.List');
     
         ProcessBuilder.start.implementation = function() {

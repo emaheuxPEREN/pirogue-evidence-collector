@@ -15,7 +15,7 @@ class ScreenRecorder:
         self.process = None
 
     def start_recording(self):
-        log.info('⚡ Starting screen recording...')
+        log.info('Starting screen recording...')
         capture_cmd = f'screenrecord --bugreport --size 1280x720 --bit-rate 2000000 {self.device_path}'
         try:
             self.device.adb_shell_no_wait(capture_cmd)
@@ -24,14 +24,14 @@ class ScreenRecorder:
             raise e
 
     def stop_recording(self):
-        log.info(f'⚡ Stopping screen recording...')
+        log.info(f'Stopping screen recording...')
         try:
             self.device.adb_shell('pkill -SIGINT screenrecord')
         except Exception as e:
             log.error(e)
         time.sleep(1)
         try:
-            log.info(f'⚡ Retrieving the screencast from the device...')
+            log.info(f'Retrieving the screencast from the device...')
             self.device.adb_shell(f'chmod 604 {self.device_path}')
             self.device.adb_pull(self.device_path, f'{self.output_dir}/screen.mp4')
         except Exception as e:

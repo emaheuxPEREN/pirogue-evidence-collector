@@ -36,14 +36,12 @@ def start_interception():
     try:
         app = FridaApplication()
         app.run()
-    except KeyboardInterrupt as k:
-        # Have to handle something?
-        print('Ctrl+C')
+    except KeyboardInterrupt:
         pass
     except Exception as e:
         log.error(e)
     finally:
         signal(SIGINT, dummy)
         signal(SIGTERM, dummy)
-        print('Stopping')
+        log.info('Instrumentation stopped')
         finalize(app)

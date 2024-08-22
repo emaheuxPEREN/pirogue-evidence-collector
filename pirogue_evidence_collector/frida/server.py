@@ -24,11 +24,11 @@ class FridaServer:
                     asset_name = asset.get('name')
                     if 'server' in asset_name and f'{platform}-{arch}.xz' in asset_name:
                         found = True
-                        log.info(f'⚡ Downloading {asset_name}...')
+                        log.info(f'Downloading {asset_name}...')
                         xz_file = requests.get(asset['browser_download_url'])
-                        log.info(f'⚡ Extracting {asset_name}...')
+                        log.info(f'Extracting {asset_name}...')
                         server_binary = lzma.decompress(xz_file.content)
-                        log.info(f'⚡ Writing {asset_name} to {output_file}...')
+                        log.info(f'Writing {asset_name} to {output_file}...')
                         with open(output_file, mode='wb') as out:
                             out.write(server_binary)
                             out.flush()

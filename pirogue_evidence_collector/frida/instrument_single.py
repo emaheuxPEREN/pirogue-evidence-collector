@@ -72,24 +72,22 @@ class FridaApplication(ConsoleApplication):
         self.capture_manager.stop_capture()
 
     def _on_message(self, message, data):
+        data = message.get('payload')
         # Pass options to friTap hooks
-        if message['payload'] == 'experimental':
+        if data == 'experimental':
             self._script.post({'type': 'experimental', 'payload': False})
             return
-        if message['payload'] == 'defaultFD':
+        if data == 'defaultFD':
             self._script.post({'type': 'defaultFD', 'payload': False})
             return
-        if message['payload'] == 'anti':
+        if data == 'anti':
             self._script.post({'type': 'antiroot', 'payload': False})
             return
-
         # Received data from the Frida hooks
-        if message['type'] == 'send':
-            data = message.get('payload')
+        if message['type'] == 'send' and data:
             # Specific handling for friTap data
-            if data and data.get('contentType', '') == 'keylog':
+            if data.get('contentType', '') == 'keylog':
                 data['dump'] = 'sslkeylog.txt'
                 data['type'] = 'sslkeylog'
                 data['data'] = data.get('keylog')
-            if data:
-                self.capture_manager.capture_data(data)
+            self.capture_manager.capture_data(data)

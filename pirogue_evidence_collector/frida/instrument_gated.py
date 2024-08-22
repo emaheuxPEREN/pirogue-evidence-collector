@@ -2,38 +2,39 @@ import argparse
 import threading
 
 import frida
+import logging
 
 from pirogue_evidence_collector.frida.capture_manager import CaptureManager
 
+log = logging.getLogger(__name__)
+
 
 def on_spawned(spawn):
-    print('on_spawned:', spawn)
+    log.info(f'[bold blue]New process caught {spawn}[/]', extra={"markup": True})
     FridaApplication.pending.append(spawn)
     FridaApplication.event.set()
 
 
 def on_message(capture_manager, spawn, message, script):
+    data = message.get('payload')
     # Pass options to friTap hooks
-    if message['payload'] == 'experimental':
+    if data == 'experimental':
         script.post({'type': 'experimental', 'payload': False})
         return
-    if message['payload'] == 'defaultFD':
+    if data == 'defaultFD':
         script.post({'type': 'defaultFD', 'payload': False})
         return
-    if message['payload'] == 'anti':
+    if data == 'anti':
         script.post({'type': 'antiroot', 'payload': False})
         return
-
     # Received data from the Frida hooks
-    if message['type'] == 'send':
-        data = message.get('payload')
+    if message['type'] == 'send' and data:
         # Specific handling for friTap data
-        if data and data.get('contentType', '') == 'keylog':
+        if data.get('contentType', '') == 'keylog':
             data['dump'] = 'sslkeylog.txt'
             data['type'] = 'sslkeylog'
             data['data'] = data.get('keylog')
-        if data:
-            capture_manager.capture_data(data)
+        capture_manager.capture_data(data)
 
 
 class FridaApplication:
@@ -71,19 +72,17 @@ class FridaApplication:
         self._device.enable_spawn_gating()
         FridaApplication.event = threading.Event()
 
-        print('Enabled spawn gating')
-        print('Pending:', self._device.enumerate_pending_spawn())
+        log.info('Enabled spawn gating')
         for spawn in self._device.enumerate_pending_spawn():
-            print('Resuming:', spawn)
             self._device.resume(spawn.pid)
         while True:
             while len(FridaApplication.pending) == 0:
-                print('Waiting for data')
+                log.info('[bold]Waiting for data[/]', extra={"markup": True})
                 FridaApplication.event.wait()
                 FridaApplication.event.clear()
             spawn = FridaApplication.pending.pop()
             if spawn.identifier:
-                print('Instrumenting:', spawn)
+                log.info(f'[blue bold]Instrumenting {spawn}[/]', extra={"markup": True})
                 session = self._device.attach(spawn.pid)
                 script = session.create_script(self.capture_manager.get_agent_script())
                 script.on('message', lambda message, data: on_message(self.capture_manager, spawn, message, script))
@@ -101,7 +100,4 @@ class FridaApplication:
                     api.inject_dynamic_hooks(spawn.pid, spawn.identifier, hook_definitions)
                 FridaApplication.sessions.append(session)
                 FridaApplication.scripts.append(script)
-            else:
-                print('Not instrumenting:', spawn)
             self._device.resume(spawn.pid)
-            print('Processed:', spawn)

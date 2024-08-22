@@ -7,7 +7,7 @@ from rich.logging import RichHandler
 
 from pirogue_evidence_collector.frida.instrument_gated import FridaApplication
 
-LOG_FORMAT = '[%(name)s] %(message)s'
+LOG_FORMAT = '%(message)s'
 logging.basicConfig(level='INFO', format=LOG_FORMAT, handlers=[
     RichHandler(show_path=False, log_time_format='%X')])
 console = Console()
@@ -19,7 +19,7 @@ def dummy(a, b):
 
 
 def finalize(app):
-    print('Saving captured data')
+    log.info('Saving captured data')
     if app:
         app.save_data()
         log.info('You can analyze the results with the following commands in the output folder:')
@@ -35,14 +35,12 @@ def start_interception():
     try:
         app = FridaApplication()
         app.run()
-    except KeyboardInterrupt as k:
-        # Have to handle something?
-        print('Ctrl+C')
+    except KeyboardInterrupt:
         pass
     except Exception as e:
         log.error(e)
     finally:
         signal(SIGINT, dummy)
         signal(SIGTERM, dummy)
-        print('Stopping')
+        log.info('Instrumentation stopped')
         finalize(app)

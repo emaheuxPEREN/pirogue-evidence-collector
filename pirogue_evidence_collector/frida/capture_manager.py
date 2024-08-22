@@ -111,6 +111,11 @@ class CaptureManager:
         return self._js_script
 
     def capture_data(self, data):
+        # Redirection of console.log()
+        if data.get('contentType', '') == 'console':
+            message = data.get('console')
+            log.info(f':information_source: [grey54 i]{message}[/]', extra={"markup": True})
+        # Save the data that comes from frida
         output_file = data.get('dump')
         if output_file is None:
             return
@@ -121,13 +126,14 @@ class CaptureManager:
         self._output_files[output_file].append(data)
 
     def save_device_properties(self):
-        log.info('Saving device properties')
         props = self.device.get_device_properties()
+        log.info('Saving device properties')
+        log.info(props)
         with open(f'{self.output_dir}/device.json', mode='w') as out:
             json.dump(props, out, indent=2)
 
     def save_data_files(self):
-        log.info('Saving data captured by Frida')
+        log.info('Saving the data captured by Frida')
         for filename, elt in self._output_files.items():
             if len(elt) == 0:
                 with open(f'{self.output_dir}/{filename}', mode='w') as out:

@@ -23,10 +23,10 @@ class AndroidDevice:
         self.__connect()
 
     def __connect(self):
-        log.info('⚡ Connecting to the USB device...')
+        log.info('Connecting to the USB device...')
         if not self.rooted:
             raise Exception('Your Android device must be rooted')
-        log.info(f'⚡ Connected...')
+        log.info(f'Connected...')
 
     def get_device_properties(self):
         props = [
@@ -178,13 +178,13 @@ class AndroidDevice:
 
     def start_frida_server(self):
         if self._check_frida_server_running():
-            log.info(f'⚡ Frida server is already running...')
+            log.info(f'Frida server is already running...')
         else:
-            log.info(f'⚡ Starting Frida server...')
+            log.info(f'Starting Frida server...')
             self.adb_shell_no_wait(f'{self.frida_server_install_dir} --daemonize')
 
     def stop_frida_server(self):
-        log.info(f'⚡ Stopping Frida server...')
+        log.info(f'Stopping Frida server...')
         try:
             self.adb_shell(f'pkill {self.frida_server_name}')
         except Exception as e:
@@ -192,10 +192,10 @@ class AndroidDevice:
 
     def install_latest_frida_server(self):
         frida_client_version = self.get_frida_client_version()
-        log.info(f'⚡ Installing the matching version of frida-server as {self.frida_server_name}...')
+        log.info(f'Installing the matching version of frida-server as {self.frida_server_name}...')
         with NamedTemporaryFile(mode='wb') as frida_server:
             FridaServer.download_frida_server(self.get_architecture(), frida_server.name, 'android', frida_client_version)
             frida_server.seek(0)
             self.adb_push(frida_server.name, self.frida_server_install_dir)
             self.adb_shell(f'chmod +x {self.frida_server_install_dir}')
-            log.info('⚡ Matching version of frida-server successfully installed...')
+            log.info('Matching version of frida-server successfully installed...')

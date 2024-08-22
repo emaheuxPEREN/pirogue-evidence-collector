@@ -50,7 +50,7 @@ class TcpDump:
             pass
 
     def start_capture(self):
-        log.info(f'⚡ Starting network interception...')
+        log.info(f'Starting network interception...')
         if not self.has_user_provided_cmd:
             TcpDump.__check_user_rights()
         try:
@@ -65,7 +65,7 @@ class TcpDump:
             raise e
 
     def stop_capture(self):
-        log.info(f'⚡ Stopping network interception...')
+        log.info(f'Stopping network interception...')
         try:
             self.process.send_signal(signal.SIGINT)
             time.sleep(1)

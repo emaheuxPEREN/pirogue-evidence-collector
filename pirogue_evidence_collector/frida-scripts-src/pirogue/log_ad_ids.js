@@ -10,7 +10,7 @@ function _log_ad_ids() {
                 'data_type': 'plain',
                 'data': id
             }
-            console.log(`Advertising ID: ${id}`)
+            console.log(`Advertising ID requested: ${id}`)
             send(msg);
             return i;
         };

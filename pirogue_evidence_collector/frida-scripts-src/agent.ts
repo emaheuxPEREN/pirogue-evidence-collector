@@ -5,6 +5,14 @@ import { socket_trace } from "./pirogue/log_socket_operations.js";
 import  { no_root } from "./pirogue/no_root.js";
 import  { inject_hooks } from "./pirogue/dynamic_hook_injector.js";
 
+console.log = function(str: string) {
+    let message = {
+        contentType: "console",
+        console: str
+    }
+    send(message)
+}
+
 rpc.exports['logAdIds'] = log_ad_ids;
 rpc.exports['log_ad_ids'] = log_ad_ids;
 rpc.exports['logAesInfo'] = log_aes_info;
