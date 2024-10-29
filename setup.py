@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="pirogue-evidence-collector",
-    version="1.0.0",
+    version="1.0.1",
     author="U+039b",
     author_email="hello@pts-project.org",
     description="A set of tools to collect evidence from mobile devices",

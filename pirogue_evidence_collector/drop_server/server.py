@@ -2,6 +2,7 @@ import gc
 import os
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 from threading import Thread
 
 from flask import *
@@ -11,6 +12,8 @@ import logging
 
 
 def create_server(output_folder):
+    output_folder = Path(output_folder)
+    output_folder.mkdir(exist_ok=True)
     app = Flask(__name__)
     app.logger.setLevel(logging.ERROR)
     logging.getLogger('werkzeug').setLevel(logging.ERROR)
@@ -57,7 +60,7 @@ def create_server(output_folder):
 
 
 class DropServer:
-    def __init__(self, output_folder, host='0.0.0.0', port=8080, debug=False):
+    def __init__(self, output_folder, *, host: str = '0.0.0.0', port: int = 8080, debug=False):
         self.app, self.shutdown_fnc = create_server(output_folder)
         self.host = host
         self.port = port

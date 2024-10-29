@@ -1,3 +1,9 @@
+pirogue-evidence-collector (1.0.1) bookword; urgency=medium
+
+  * Automatically open the listening port on the isolated network
+
+ -- U+039b <hello@pts-project.org>  Tue, 29 Oct 2024 16:39:18 +0100
+
 pirogue-evidence-collector (1.0.0) bookworm; urgency=medium
 
   * First release.
