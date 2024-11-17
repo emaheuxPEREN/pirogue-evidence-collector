@@ -5,6 +5,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pirogue_colander_connector.collectors.ignore import ColanderIgnoreFile
+
 
 class MetadataExporter:
     def __init__(self, input_file: Path):
@@ -59,12 +61,13 @@ class BatchExporter:
     def __init__(self, input_folder: Path, extra_metadata: dict = None):
         self.input_folder: Path = input_folder
         self.extra_metadata: dict = extra_metadata
+        self.colander_ignore = ColanderIgnoreFile(self.input_folder)
 
     def export(self):
         for input_file in self.input_folder.glob('*'):
             if not input_file.is_file():
                 continue
-            if input_file.name.endswith('.metadata.json'):
+            if self.colander_ignore.is_ignored(input_file):
                 continue
             exporter = MetadataExporter(input_file)
             exporter.extract()

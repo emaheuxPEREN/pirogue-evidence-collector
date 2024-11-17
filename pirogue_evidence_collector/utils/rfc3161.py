@@ -3,6 +3,7 @@ import os
 import enum
 from pathlib import Path
 
+from pirogue_colander_connector.collectors.ignore import ColanderIgnoreFile
 from pyasn1.codec.der import encoder
 import requests
 
@@ -54,25 +55,30 @@ class TimestampServer(enum.Enum):
         return output_file_path
 
 
-class FolderTimestamper:
-    def __init__(self, input_folder, use_openssl=True, server: TimestampServer = TimestampServer.FREETSA):
-        self.input_folder = Path(input_folder)
+class Timestamper:
+    def __init__(self, input_path: Path):
+        self.input_path = Path(input_path)
+        self.colander_ignore = ColanderIgnoreFile(self.input_path)
+        for p in ['*.tsq', '*.tsr', '*.metadata.json', '*.crt', '*.pem', '*.md']:
+            self.colander_ignore.add_ignored_pattern(p)
+        self.colander_ignore.save_ignore_file()
+
+
+class FolderTimestamper(Timestamper):
+    def __init__(self, input_path, use_openssl=True, server: TimestampServer = TimestampServer.FREETSA):
+        super().__init__(input_path)
         self.use_openssl = use_openssl or force_use_openssl
         self.server = server
 
-    @staticmethod
-    def _ignore_file(filename):
+    def _ignore_file(self, filename):
         if filename.startswith('.'):
             return True
-        for ext in ['.tsq', '.tsr', '.metadata.json', 'crt', 'pem', 'md']:
-            if filename.endswith(ext):
-                return True
-        return False
+        return self.colander_ignore.is_ignored(Path(filename))
 
     def _combine_timestamp(self):
         hashes = []
         # Compute the hash of the files contained in the folder
-        for file in self.input_folder.glob('*'):
+        for file in self.input_path.glob('*'):
             if not file.is_file():
                 continue
             if self._ignore_file(file.name):
@@ -84,7 +90,7 @@ class FolderTimestamper:
             hashes.append((file, sha512_hash.hexdigest()))
 
         # Write the hashes to a file
-        with open(os.path.join(self.input_folder, 'hashes.txt'), 'w') as hashes_file:
+        with open(os.path.join(self.input_path, 'hashes.txt'), 'w') as hashes_file:
             for file, hash in hashes:
                 hashes_file.write(f'{file.name} {hash}\n')
 
@@ -93,7 +99,7 @@ class FolderTimestamper:
         ft.timestamp()
 
         # Write the verification instructions to a README file
-        with open(os.path.join(self.input_folder, 'README.md'), 'w') as readme_file:
+        with open(os.path.join(self.input_path, 'README.md'), 'w') as readme_file:
             server_home_url = self.server.value['home_url']
             readme_file.write('# Timestamp verification instructions\n')
             readme_file.write(
@@ -106,7 +112,7 @@ class FolderTimestamper:
         if combine:
             self._combine_timestamp()
         else:
-            for file in self.input_folder.glob('*'):
+            for file in self.input_path.glob('*'):
                 if not file.is_file():
                     continue
                 if self._ignore_file(file.name):
@@ -115,11 +121,13 @@ class FolderTimestamper:
                 ft.timestamp()
 
 
-class FileTimestamper:
-    def __init__(self, file_path, use_openssl=True, server: TimestampServer = TimestampServer.FREETSA):
-        self.file_path = Path(file_path)
+class FileTimestamper(Timestamper):
+    def __init__(self, input_path: Path, use_openssl=True,
+                 server: TimestampServer = TimestampServer.FREETSA):
+        super().__init__(input_path)
+        self.file_path = Path(input_path)
         self.use_openssl = use_openssl or force_use_openssl
-        self.output_dir = Path(os.path.dirname(file_path))
+        self.output_dir = Path(os.path.dirname(input_path))
         self.output_tsr = self.output_dir / (self.file_path.name + '.tsr')
         self.output_tsq = self.output_dir / (self.file_path.name + '.tsq')
         self.server = server

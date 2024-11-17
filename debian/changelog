@@ -1,3 +1,9 @@
+pirogue-evidence-collector (1.0.2) bookworm; urgency=medium
+
+  * Take .colander_ignore into account
+
+ -- U+039b <hello@pts-project.org>  Sun, 17 Nov 2024 16:40:49 +0100
+
 pirogue-evidence-collector (1.0.1) bookword; urgency=medium
 
   * Automatically open the listening port on the isolated network

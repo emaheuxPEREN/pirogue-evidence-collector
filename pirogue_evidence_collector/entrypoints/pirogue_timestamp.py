@@ -17,10 +17,8 @@ def main():
         description='Add a trusted timestamp to all the files contained in a folder'
     )
     arg_parser.add_argument(
-        '-p',
-        '--path',
+        'path',
         help='Path of the folder containing the files to be timestamped',
-        required=True,
         type=pathlib.Path
     )
     arg_parser.add_argument(
@@ -30,7 +28,7 @@ def main():
              'stamping each file individually',
         default=False,
         required=False,
-        type=bool
+        action='store_true'
     )
 
     args = arg_parser.parse_args()

@@ -16,6 +16,7 @@ Architecture: all
 Depends: ${misc:Depends},
  ${python3:Depends},
  pirogue-admin-client,
+ pirogue-colander-connector,
  python3-adb-shell,
  python3-usb1,
  python3-requests,
