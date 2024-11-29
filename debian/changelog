@@ -1,3 +1,9 @@
+pirogue-evidence-collector (1.0.3) bookwork; urgency=medium
+
+  * Make the URL of the file drop server ephemeral
+
+ -- U+039b <hello@pts-project.org>  Fri, 29 Nov 2024 07:59:50 +0100
+
 pirogue-evidence-collector (1.0.2) bookworm; urgency=medium
 
   * Take .colander_ignore into account
