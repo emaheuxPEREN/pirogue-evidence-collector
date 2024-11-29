@@ -1,6 +1,5 @@
 import argparse
 import time
-
 import netifaces
 import logging
 
@@ -32,7 +31,6 @@ def main():
 
     if args.iface:
         isolated_iface_address = netifaces.ifaddresses(args.iface)[netifaces.AF_INET][0]['addr']
-    url = f'http://{isolated_iface_address}:{args.port}'
 
     # Open port on the isolated network
     isolated_network_port: int = args.port
@@ -44,6 +42,7 @@ def main():
 
     # Launch the web server
     server = DropServer(args.output, host=isolated_iface_address, port=isolated_network_port)
+    url = server.url
     server.start()
     time.sleep(0.1)
     qg = QRCodeGenerator(url)
