@@ -1,3 +1,9 @@
+pirogue-evidence-collector (1.0.4) bookworm; urgency=medium
+
+  * Increase the number of Frida releases we retrieve from GitHub
+
+ -- U+039b <hello@pts-project.org>  Mon, 21 Jul 2025 20:19:28 +0200
+
 pirogue-evidence-collector (1.0.3) bookwork; urgency=medium
 
   * Make the URL of the file drop server ephemeral
