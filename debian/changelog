@@ -1,3 +1,9 @@
+pirogue-evidence-collector (1.0.5) bookworm; urgency=medium
+
+  * Retrieve Frida server release directly by tag name on GitHub API
+
+ -- Etienne Maheux <contact@peren.gouv.fr>  Wed, 23 Jul 2025 18:21:29 +0200
+
 pirogue-evidence-collector (1.0.4) bookworm; urgency=medium
 
   * Increase the number of Frida releases we retrieve from GitHub
@@ -16,7 +22,7 @@ pirogue-evidence-collector (1.0.2) bookworm; urgency=medium
 
  -- U+039b <hello@pts-project.org>  Sun, 17 Nov 2024 16:40:49 +0100
 
-pirogue-evidence-collector (1.0.1) bookword; urgency=medium
+pirogue-evidence-collector (1.0.1) bookworm; urgency=medium
 
   * Automatically open the listening port on the isolated network
 
