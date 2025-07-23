@@ -4,4 +4,6 @@ __pycache__
 *.pyc
 .idea
 node_modules
+/build
+/*.egg-info
 pirogue_evidence_collector/frida-dynamic-hooks/*.json
